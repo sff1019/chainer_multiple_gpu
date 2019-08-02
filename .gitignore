@@ -1,0 +1,7 @@
+__pycache__
+
+job.sh
+
+slurm-*.out
+
+results_resnet50/
