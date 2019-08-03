@@ -20,10 +20,6 @@ if __name__ == '__main__':
                         help='First GPU ID')
     parser.add_argument('--gpu1', '-g1', default=1, type=int,
                         help='Second GPU ID')
-    # parser.add_argument('--gpu2', '-g2', default=2, type=int,
-    #                     help='Third GPU ID')
-    # parser.add_argument('--gpu3', '-g3', default=3, type=int,
-    #                     help='Fourth GPU ID')
     parser.add_argument('--out', '-o', default='result_model_parallel',
                         help='Directory to output the result')
     parser.add_argument('--resume', '-r', default='',
@@ -32,15 +28,14 @@ if __name__ == '__main__':
                         help='Number of units')
     args = parser.parse_args()
 
-    print(f'GPU: {args.gpu0}, {args.gpu1}, {args.gpu2}, {args.gpu3}')
+    print(f'GPU: {args.gpu0}, {args.gpu1}')
     print('# unit: {}'.format(args.unit))
     print('# Minibatch-size: {}'.format(args.batchsize))
     print('# epoch: {}'.format(args.epoch))
     print('')
 
-    # model = L.Classifier(MLP(args.unit, 10))
-    model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1))
-    # model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1, args.gpu2, args.gpu3))
+    model = L.Classifier(MLP(args.unit, 10))
+    # model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1))
     chainer.backends.cuda.get_device_from_id(args.gpu0).use()
 
     optimizer = chainer.optimizers.Adam()
