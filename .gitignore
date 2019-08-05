@@ -1,6 +1,8 @@
 __pycache__
+.python-version
 
 job.sh
+job.sh.*
 net.pyc
 
 slurm-*.out

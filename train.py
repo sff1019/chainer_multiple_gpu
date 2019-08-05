@@ -1,5 +1,5 @@
 import argparse
-from chainer import backend
+from chainer import backends
 from chainer import training
 from chainer.datasets import get_cifar10
 from chainer.training import extensions
@@ -20,10 +20,10 @@ if __name__ == '__main__':
                         help='First GPU ID')
     parser.add_argument('--gpu1', '-g1', default=1, type=int,
                         help='Second GPU ID')
-    # parser.add_argument('--gpu2', '-g2', default=2, type=int,
-    #                     help='Third GPU ID')
-    # parser.add_argument('--gpu3', '-g3', default=3, type=int,
-    #                     help='Fourth GPU ID')
+    parser.add_argument('--gpu2', '-g2', default=2, type=int,
+                        help='Third GPU ID')
+    parser.add_argument('--gpu3', '-g3', default=3, type=int,
+                        help='Fourth GPU ID')
     parser.add_argument('--out', '-o', default='result_model_parallel',
                         help='Directory to output the result')
     parser.add_argument('--resume', '-r', default='',
@@ -32,15 +32,15 @@ if __name__ == '__main__':
                         help='Number of units')
     args = parser.parse_args()
 
-    print(f'GPU: {args.gpu0}, {args.gpu1}, {args.gpu2}, {args.gpu3}')
+    # print(f'GPU: {args.gpu0}, {args.gpu1}, {args.gpu2}, {args.gpu3}')
     print('# unit: {}'.format(args.unit))
     print('# Minibatch-size: {}'.format(args.batchsize))
     print('# epoch: {}'.format(args.epoch))
     print('')
 
     # model = L.Classifier(MLP(args.unit, 10))
-    model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1))
-    # model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1, args.gpu2, args.gpu3))
+    # model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1))
+    model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1, args.gpu2, args.gpu3))
     chainer.backends.cuda.get_device_from_id(args.gpu0).use()
 
     optimizer = chainer.optimizers.Adam()
@@ -56,15 +56,15 @@ if __name__ == '__main__':
     trainer = training.Trainer(updater, (args.epoch, 'epoch'), out=args.out)
 
     trainer.extend(extensions.Evaluator(test_iter, model, device=args.gpu0))
-    trainer.extend(extensions.DumpGraph('main/loss'))
+    # trainer.extend(extensions.DumpGraph('main/loss'))
     trainer.extend(extensions.snapshot(), trigger=(args.epoch, 'epoch'))
     trainer.extend(extensions.LogReport())
     trainer.extend(extensions.PrintReport(
         ['epoch', 'main/loss', 'validation/main/loss',
          'main/accuracy', 'validation/main/accuracy', 'elapsed_time']))
     trainer.extend(extensions.ProgressBar())
-    trainer.extend(extensions.PlotReport(['main/loss', 'validation/main/loss'], x_key='epoch', file_name='loss.png'))
-    trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='accuracy.png'))
+    # trainer.extend(extensions.PlotReport(['main/loss', 'validation/main/loss'], x_key='epoch', file_name='loss.png'))
+    # trainer.extend(extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'], x_key='epoch', file_name='accuracy.png'))
 
     if args.resume:
         chainer.serializers.load_npz(args.resume, trainer)
