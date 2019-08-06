@@ -38,9 +38,8 @@ if __name__ == '__main__':
     print('# epoch: {}'.format(args.epoch))
     print('')
 
-    # model = L.Classifier(MLP(args.unit, 10))
-    # model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1))
-    model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1, args.gpu2, args.gpu3))
+    model = L.Classifier(MLP(args.unit, 10))
+    # model = L.Classifier(ParallelMLP(args.unit, 10, args.gpu0, args.gpu1, args.gpu2, args.gpu3))
     chainer.backends.cuda.get_device_from_id(args.gpu0).use()
 
     optimizer = chainer.optimizers.Adam()
